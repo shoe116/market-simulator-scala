@@ -2,3 +2,5 @@
 .repl
 target
 *.iml
+*.class
+*.log
