@@ -1,15 +1,12 @@
 package com.buffettcode.market.stock
 import com.buffettcode.market.config.MarketConfig
-import com.buffettcode.market.config.CountryCode
-import com.buffettcode.market.config.BrokerConfig
 
-case class Stock(country: CountryCode.Value, market: MarketConfig.Value, ticker: String) {}
+case class Stock(market: MarketConfig.Value, ticker: String, unitNumber: Int) {}
 
-case class StockTransaction(
-  stock: Stock,
-  brokerConfig: BrokerConfig.Value,
-  count: Int,
-  unitPrice: Double
-) {
-  def totalPrice: Double = count * unitPrice
+object Stock {
+  val DEFAULT_UNIT_NUMBER: Int = 100
+  def create(market: MarketConfig.Value, ticker: String, unitNumber: Int) =
+    Stock(market, ticker, unitNumber)
+  def create(market: MarketConfig.Value, ticker: String) =
+    Stock(market, ticker, DEFAULT_UNIT_NUMBER)
 }

@@ -1,6 +1,6 @@
 package com.buffettcode.market.config
 
 object MarketConfig extends Enumeration {
-  val TOKYO1 = Value("Tokyo Stock Exchange 1st")
-  val TOKYO_MOTHERS = Value("Tokyo Stock Exchange Mothers")
+  val TOSHO_1ST = Value("TOKYO_STOCK_EXCHANGE_1ST")
+  val TOSHO_MOTHERS = Value("TOKYO_STOCK_EXCHANGE_MOTHERS")
 }

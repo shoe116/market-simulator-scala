@@ -7,7 +7,7 @@ import scala.util.Try
 import com.buffettcode.market.config.CountryCode
 import com.buffettcode.market.errors.{InvalidTradeException, UnSupportedCountryException}
 
-case class OwnedStock(stock: Stock) {
+case class OwnedStock(country: CountryCode.Value, stock: Stock) {
   import com.buffettcode.market.portfolio.OwnedStock._
   var totalCost: Double = 0.0
   var totalCount: Long = 0
@@ -24,7 +24,7 @@ case class OwnedStock(stock: Stock) {
     totalCost += cost
     currentCount += count
     // calc average Price using Total Average method
-    averageCost = calcTotalAverageCost(stock.country, totalCost, totalCount)
+    averageCost = calcTotalAverageCost(country, totalCost, totalCount)
     this
   }
 

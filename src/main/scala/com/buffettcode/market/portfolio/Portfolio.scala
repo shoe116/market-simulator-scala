@@ -1,12 +1,14 @@
 package com.buffettcode.market.portfolio
 
 import com.buffettcode.market.broker.Broker
+import com.buffettcode.market.config.CountryCode
 import com.buffettcode.market.errors.InvalidTradeException
 
 import scala.collection.mutable.Map
-import com.buffettcode.market.stock.{Stock, StockTransaction}
+import com.buffettcode.market.stock.Stock
+import com.buffettcode.market.trade.StockTrade
 
-class Portfolio(firstDeposit: Double) {
+class Portfolio(countryCode: CountryCode.Value, firstDeposit: Double) {
   // init values
   var currentDeposit: Double = firstDeposit
   var totalInvestment: Double = firstDeposit
@@ -21,9 +23,9 @@ class Portfolio(firstDeposit: Double) {
     this
   }
 
-  def buy(transaction: StockTransaction): Portfolio = {
-    val broker = Broker(transaction.brokerConfig)
-    val cost = broker.calcBuyingCost(transaction.totalPrice)
+  def buy(stockTrade: StockTrade): Portfolio = {
+    val broker = Broker(stockTrade.brokerConfig)
+    val cost = broker.calcBuyingCost(stockTrade.totalPrice)
     // validate
     if (cost > currentDeposit) {
       throw new InvalidTradeException(s"cost=${cost} is over current deposit=${currentDeposit}")
@@ -31,37 +33,38 @@ class Portfolio(firstDeposit: Double) {
 
     // update owned stock container
     ownedStocks
-      .getOrElse(transaction.stock, OwnedStock(transaction.stock))
-      .append(transaction.count, cost)
+      .getOrElse(stockTrade.stock, OwnedStock(countryCode, stockTrade.stock))
+      .append(stockTrade.count, cost)
     currentDeposit -= cost
-    totalFee += broker.calcFree(transaction.totalPrice)
+    totalFee += broker.calcFree(stockTrade.totalPrice)
     this
   }
 
-  def sell(transaction: StockTransaction): Portfolio = {
-    val broker = Broker(transaction.brokerConfig)
-    val cost = broker.calcSellingCost(transaction.totalPrice)
+  def sell(stockTrade: StockTrade): Portfolio = {
+    val broker = Broker(stockTrade.brokerConfig)
+    val cost = broker.calcSellingCost(stockTrade.totalPrice)
 
-    if (cost > currentDeposit + transaction.totalPrice) {
+    if (cost > currentDeposit + stockTrade.totalPrice) {
       throw new InvalidTradeException(
-        s"cost=${cost} is over current deposit(${currentDeposit}) + trading total price(${transaction.totalPrice})"
+        s"cost=${cost} is over current deposit(${currentDeposit}) + trading total price(${stockTrade.totalPrice})"
       )
     }
 
-    ownedStocks.get(transaction.stock) match {
+    ownedStocks.get(stockTrade.stock) match {
       case Some(owned) =>
-        if (owned.currentCount <= transaction.count) {
-          owned.remove(transaction.count)
+        if (owned.currentCount <= stockTrade.count) {
+          owned.remove(stockTrade.count)
           this
         } else {
           throw new InvalidTradeException(
-            s"owned stock count::${owned.currentCount} is more than selling count::${transaction.count}"
+            s"owned stock count::${owned.currentCount} is more than selling count::${stockTrade.count}"
           )
         }
-      case _ => throw new InvalidTradeException(s"stock::${transaction.stock} has not owned.")
+      case _ => throw new InvalidTradeException(s"stock::${stockTrade.stock} has not owned.")
     }
   }
 
-  def calcTotalAsset(func: OwnedStock => Double) = ???
+  def calcTotalAsset(getCurrentPriceFunc: OwnedStock => Double): Double =
+    ownedStocks.values.map(v => getCurrentPriceFunc(v)).sum + currentDeposit
 
 }

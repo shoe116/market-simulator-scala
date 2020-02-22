@@ -5,6 +5,7 @@ import com.buffettcode.market.config.BrokerConfig
 case class BrokerFeeCalculator(config: BrokerConfig.Value) {
   def fee(total: Double): Double = config match {
     case BrokerConfig.FREE => 0.0
+    case BrokerConfig.TEST => 10
     case BrokerConfig.RAKUTEN =>
       total match {
         case t if t <= 50000   => 54
