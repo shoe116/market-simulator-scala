@@ -4,7 +4,6 @@ import com.buffettcode.market.config.MarketConfig
 import org.joda.time.DateTime
 import scala.collection.mutable.Map
 
-
 case class DailyStockPrices(day: DateTime, market: MarketConfig.Value) {
   val container = Map.empty[Stock, Double]
 

@@ -5,7 +5,6 @@ import org.joda.time.DateTime
 
 import scala.collection.mutable.ListBuffer
 
-
 case class MarketSimulator(startDate: DateTime, endDate: DateTime, strategy: TradeStrategy) {
   val dailyStockPrices = ListBuffer[DailyStockPrices]()
 }

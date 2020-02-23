@@ -7,4 +7,3 @@ import org.joda.time.DateTime
 trait TradeStrategy {
   def getOrders(portfolio: Portfolio, day: DateTime): Seq[Order]
 }
-
